@@ -28,7 +28,7 @@ cli.task('help', function(cb) {
     '  Commands:',
     '    --init, -i  Initialize a prompt to store common values',
     '    --set,  -s  Save a value to the common-config store',
-    '    --get,  -g  Show a value from the common-config store',
+    '    --get,  -g  Show all values, or a specific value from the common-config store',
     '    --del,  -d  Delete a value from the common-config store',
     '    --help      Display this menu',
     ''
