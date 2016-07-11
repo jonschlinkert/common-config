@@ -21,13 +21,16 @@ var argv = require('yargs-parser')(process.argv.slice(2), {
 cli.task('help', function(cb) {
   console.log([
     '',
-    '  Usage: common-config <command> [options]',
-    '  Command: generator or tasks to run',
-    '  ',
-    '  Options:',
-    '    --set, -s  Save a value to the common-config store',
-    '    --get, -g  Show a value from the common-config store',
-    '    --del, -d  Delete a value to the common-config store',
+    `${utils.log.gray('$ common-config --help')}`,
+    ``,
+    `  Usage: ${info('common-config <command> [value]')}`,
+    '',
+    '  Commands:',
+    '    --init, -i  Initialize a prompt to store common values',
+    '    --set,  -s  Save a value to the common-config store',
+    '    --get,  -g  Show a value from the common-config store',
+    '    --del,  -d  Delete a value from the common-config store',
+    '    --help      Display this menu',
     ''
   ].join('\n'));
   cb();
@@ -68,9 +71,16 @@ cli.task('init', function(cb) {
       cb(err);
       return;
     }
+
     answers = utils.omitEmpty(answers);
     config.set(answers);
-    console.log(utils.log.success, 'saved', success(answers));
+    console.log();
+    console.log('The following values were saved:');
+    console.log();
+    var data = utils.tableize(answers);
+    var keys = Object.keys(data);
+    show(keys, data, 'green');
+    console.log();
     cb();
   });
 });
@@ -90,18 +100,14 @@ cli.task('set', function(cb) {
  */
 
 cli.task('get', function(cb) {
-  if (argv.get === true) {
-    argv.get = Object.keys(config.data);
-  } else if (argv.get.length === 0) {
+  var data = utils.tableize(config.data);
+  var keys = argv.get;
+  if (keys === true) {
+    keys = Object.keys(data);
+  } else if (keys.length === 0) {
     return cli.build('all', cb);
   }
-
-  var obj = {};
-  argv.get.forEach(function(key) {
-    obj[key] = config.get(key);
-  });
-  console.log(utils.log.bold('common-config:'));
-  console.log(info(obj));
+  show(keys, data, 'cyan');
   cb();
 });
 
@@ -110,7 +116,7 @@ cli.task('get', function(cb) {
  */
 
 cli.task('all', function(cb) {
-  console.log(utils.log.bold('common-config:'));
+  console.log(bold('common-config:'));
   console.log(info(config.data));
   cb();
 });
@@ -120,7 +126,7 @@ cli.task('all', function(cb) {
  */
 
 cli.task('del', function(cb) {
-  var data = config.data;
+  var data = utils.tableize(config.data);
   var keys = Object.keys(data);
 
   if (keys.length === 0) {
@@ -148,10 +154,12 @@ cli.task('del', function(cb) {
     return;
   }
 
-  argv.del.forEach(function(key) {
+  keys = argv.del;
+  keys.forEach(function(key) {
     config.del(key);
-    console.log(utils.log.success, 'deleted', error(key));
   });
+
+  console.log(utils.log.success, 'deleted', error(keys.join(', ')));
   cb();
 });
 
@@ -180,15 +188,48 @@ cli.build('default', function(err) {
  */
 
 function info(val) {
-  return utils.log.cyan(util.inspect(val));
+  return utils.log.cyan(inspect(val));
 }
 
 function success(val) {
-  return utils.log.green(util.inspect(val));
+  return utils.log.green(inspect(val));
+}
+
+function bold(val) {
+  return utils.log.bold(val);
 }
 
 function error(val) {
-  return utils.log.red(util.inspect(val));
+  return utils.log.red(inspect(val));
+}
+
+function warn(val) {
+  return utils.log.yellow(inspect(val));
+}
+
+function heading(val) {
+  return utils.log.heading(val);
+}
+
+function inspect(val) {
+  return typeof val === 'string' ? val : util.inspect(val);
+}
+
+function show(keys, data, color) {
+  color = color || 'cyan';
+  var val = utils.pick(data, keys);
+  var headings = [heading('property'), heading('value')];
+  var rows = [];
+  for (var key in val) {
+    rows.push([key, utils.log[color](inspect(val[key]))]);
+  }
+  var list = [headings].concat(rows);
+  var table = utils.table(list, {
+    stringLength: function(str) {
+      return utils.stripColor(str).length;
+    }
+  });
+  console.log(table);
 }
 
 /**
@@ -211,17 +252,16 @@ function normalize(argv) {
 }
 
 function parse(val, key, argv) {
-  var obj = {};
-
   if ((key === 'del' || key === 'get') && val === true) {
-    // argv[key] = Object.keys(config.data);
     return;
   }
+
   if ((key === 'del' || key === 'get') && typeof val === 'string') {
     argv[key] = val.split(',');
     return;
   }
 
+  var obj = {};
   if (typeof val === 'string' && /[:=]/.test(val)) {
     var segs = val.split(/[:=]/);
     utils.set(obj, segs.shift(), segs.pop());

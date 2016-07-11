@@ -31,10 +31,14 @@
     "data-store": "^0.16.1",
     "get-value": "^2.0.6",
     "lazy-cache": "^2.0.1",
-    "log-utils": "^0.1.4",
+    "log-utils": "^0.2.0",
+    "object.pick": "^1.1.2",
     "omit-empty": "^0.4.1",
     "question-cache": "^0.4.0",
     "set-value": "^0.3.3",
+    "strip-color": "^0.1.0",
+    "tableize-object": "^0.1.0",
+    "text-table": "^0.2.0",
     "yargs-parser": "^2.4.0"
   },
   "devDependencies": {
