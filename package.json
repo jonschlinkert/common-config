@@ -1,7 +1,7 @@
 {
   "name": "common-config",
   "description": "Config store for values that are commonly needed by project scaffolders, like Generate or Yeoman.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/jonschlinkert/common-config",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/common-config",
