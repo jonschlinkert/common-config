@@ -35,7 +35,7 @@
     "object.pick": "^1.1.2",
     "omit-empty": "^0.4.1",
     "question-cache": "^0.4.0",
-    "set-value": "^0.3.3",
+    "set-value": "^3.0.1",
     "strip-color": "^0.1.0",
     "tableize-object": "^0.1.0",
     "text-table": "^0.2.0",
