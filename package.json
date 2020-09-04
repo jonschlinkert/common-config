@@ -39,7 +39,7 @@
     "strip-color": "^0.1.0",
     "tableize-object": "^0.1.0",
     "text-table": "^0.2.0",
-    "yargs-parser": "^2.4.0"
+    "yargs-parser": "^19.0.4"
   },
   "devDependencies": {
     "gulp-format-md": "^0.1.9",
